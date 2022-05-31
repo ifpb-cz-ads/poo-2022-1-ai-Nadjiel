@@ -21,23 +21,29 @@ public class Main {
             System.out.print("retrato.\n");
         }
 
-        System.out.print("Qual peca voce gostaria de mexer? (t, b, c, R, D, ou p) ");
-        char peca = scanner.nextLine().charAt(0);
-        
-        switch(peca) {
-            case 't': System.out.println("Movida a torre.");
-                    break;
-            case 'b': System.out.println("Movido o bispo.");
-                    break;
-            case 'c': System.out.println("Movido o cavalo.");
-                    break;
-            case 'R': System.out.println("Movido o rei.");
-                    break;
-            case 'D': System.out.println("Movida a dama.");
-                    break;
-            case 'p': System.out.println("Movido o peao.");
-                    break;
-            default: System.out.println("Peca inserida invalida.");
+        int movimentos = 10;
+
+        while(movimentos > 0) {
+            System.out.print("Qual peca voce gostaria de mexer? (t, b, c, R, D, ou p) ");
+            char peca = scanner.nextLine().charAt(0);
+            
+            switch(peca) {
+                case 't': System.out.println("Movida a torre.");
+                        break;
+                case 'b': System.out.println("Movido o bispo.");
+                        break;
+                case 'c': System.out.println("Movido o cavalo.");
+                        break;
+                case 'R': System.out.println("Movido o rei.");
+                        break;
+                case 'D': System.out.println("Movida a dama.");
+                        break;
+                case 'p': System.out.println("Movido o peao.");
+                        break;
+                default: System.out.println("Peca inserida invalida.");
+            }
+
+            movimentos--;
         }
 
         scanner.close();
