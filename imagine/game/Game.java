@@ -1,11 +1,6 @@
 package imagine.game;
 
-import java.util.ArrayList;
 import java.awt.Graphics2D;
-
-import imagine.flow.*;
-import imagine.input.KeyHandler;
-import imagine.stage.Stage;
 
 /**
  * Abstract class for creating a new game.
@@ -15,23 +10,12 @@ import imagine.stage.Stage;
  * 
  * @author Daniel O Sousa
  */
-public abstract class Game implements GameFluid {
+public abstract class Game {
 
     /**
      * The {@code GameFrame} where this game will be held.
      */
     private GameFrame gameFrame;
-
-    /**
-     * An object to help keeping track of
-     * the keys pressed by the player.
-     */
-    private KeyHandler keyHandler;
-
-    /**
-     * An object for controlling the flow of the game.
-     */
-    private GameFlow gameFlow;
 
     /**
      * Field which has the information of the default
@@ -44,16 +28,6 @@ public abstract class Game implements GameFluid {
      * height of the tiles of this {@code Game}.
      */
     private int tileHeight;
-
-    /**
-     * Stores the stages of this {@code Game}.
-     */
-    private ArrayList<Stage> stages;
-
-    /**
-     * Stores the current stage of this {@code Game}.
-     */
-    private Stage currentStage;
 
     /**
      * Boolean value to configure if a tile
@@ -69,7 +43,6 @@ public abstract class Game implements GameFluid {
     public Game() {
         createGameFrame();
         setSize(1024, 576);
-        createKeyHandler();
     }
 
     /**
@@ -152,91 +125,6 @@ public abstract class Game implements GameFluid {
      */
     public int getGamePanelHeight() {
         return getGamePanel().getHeight();
-    }
-
-    /**
-     * Creates a {@code KeyHandler} instance
-     * to monitor the inputs from the keyboard.
-     */
-    private void createKeyHandler() {
-        this.keyHandler = new KeyHandler();
-        getGameFrame().addKeyListener(this.keyHandler);
-    }
-
-    /**
-     * Returns the {@code KeyHandler} that
-     * is monitoring the keyboard input.
-     * 
-     * @return the {@code KeyHandler}
-     */
-    public KeyHandler getKeyHandler() {
-        return this.keyHandler;
-    }
-
-    /**
-     * Verifies if a key specified by the passed
-     * {@code keyCode} is currently pressed.
-     * 
-     * @param keyCode the code of the key to verify
-     * 
-     * @return {@code true} or {@code false} depending
-     * on the key state
-     */
-    public boolean keyIsPressed(int keyCode) {
-        return getKeyHandler().isPressed(keyCode);
-    }
-
-    /**
-     * Creates and starts a {@code GameFlow} to
-     * loop through the game.
-     * 
-     * @param fps the fps with which the game
-     * should iterate
-     */
-    public void createGameFlow(int fps) {
-        this.gameFlow = new GameFlow(this, fps);
-    }
-
-    /**
-     * Returns the {@code GameFlow} of this {@code Game}.
-     * 
-     * @return the {@code GameFlow}
-     */
-    public GameFlow getGameFlow() {
-        return this.gameFlow;
-    }
-
-    /**
-     * Returns the fps with which this
-     * {@code Game} is configured to run.
-     * 
-     * @return the fps of this {@code Game}
-     */
-    public int getFps() {
-        return getGameFlow().getFps();
-    }
-
-    /**
-     * Sets if the fps should or shouldn't
-     * be displayed on the console.
-     * 
-     * @param displayFps boolean to
-     * configure the fps display
-     */
-    public void setDisplayFps(boolean displayFps) {
-        getGameFlow().setDisplayFps(displayFps);
-    }
-
-    /**
-     * Returns {@code true} if the fps is configured
-     * to be displayed on the console and {@code false}
-     * otherwise.
-     * 
-     * @return boolean indicating fps display
-     * state
-     */
-    public boolean getDisplayFps() {
-        return getGameFlow().getDisplayFps();
     }
 
     /**
@@ -356,109 +244,6 @@ public abstract class Game implements GameFluid {
     }
 
     /**
-     * Sets the stages of this {@code Game}.
-     * If the passed argument is {@code null},
-     * does nothing.
-     * 
-     * @param stages the stages that this
-     * {@code Game} will have
-     */
-    public void setStages(ArrayList<Stage> stages) {
-        if(stages != null) {
-            for(Stage stage : stages) {
-                stage.setGame(this);
-            }
-            this.stages = stages;
-        }
-    }
-
-    /**
-     * Returns an {@code ArrayList} with
-     * the stages of this {@code Game}.
-     * 
-     * @return the stages of this {@code Game}
-     */
-    public ArrayList<Stage> getStages() {
-        return this.stages;
-    }
-
-    /**
-     * Selects and starts the stage specified
-     * by the passed {@code position}.
-     * If there are no stages added to this
-     * {@code Game}, however, does nothing.
-     * <p>
-     * If the passed argument does not correspond
-     * to a stage (is negative or greater or equal 
-     * to the amount of added stages), throws
-     * an {@code IndexOutOfBoundException}.
-     * 
-     * @param position a position specifiyng
-     * the stage to select
-     * 
-     * @throws IndexOutOfBoundsException if the argument
-     * doesn't correspond to a stage
-     */
-    public void selectStage(int position) {
-        if(getStages() == null || getStages().size() == 0) {
-            return;
-        }
-        if(position < 0 || position >= getStages().size()) {
-            throw new IndexOutOfBoundsException("position " + position + " does not correspond to a stage");
-        }
-
-        Stage currentStage = getStages().get(position);
-        currentStage.start();
-        this.currentStage = currentStage;
-    }
-
-    /**
-     * Selects and starts the next stage from
-     * the stages of this {@code Game}.
-     * <p>
-     * If there are no stages to select, this
-     * method won't do anything.
-     */
-    public void nextStage() {
-        if(getStages() == null) {
-            return;
-        }
-        
-        int currentStageIndex = getStages().indexOf(currentStage);
-        if(currentStageIndex < getStages().size() - 1) {
-            selectStage(currentStageIndex + 1);
-        }
-    }
-
-    /**
-     * Selects and starts the previous stage from
-     * the stages of this {@code Game}.
-     * <p>
-     * If there are no stages to select, this
-     * method won't do anything.
-     */
-    public void previousStage() {
-        if(getStages() == null) {
-            return;
-        }
-        
-        int currentStageIndex = getStages().indexOf(currentStage);
-        if(currentStageIndex > 0) {
-            selectStage(currentStageIndex - 1);
-        }
-    }
-
-    /**
-     * Returns the stage which is
-     * currently selected.
-     * 
-     * @return the current stage
-     */
-    public Stage getCurrentStage() {
-        return this.currentStage;
-    }
-
-    /**
      * Specifies if a tile grid should be drawn.
      * This grid is usually good for debugging.
      * 
@@ -482,15 +267,6 @@ public abstract class Game implements GameFluid {
     }
 
     /**
-     * Makes the flow of this {@code Game} finish.
-     */
-    public void killGameFlow() {
-        if(getGameFlow() != null) {
-            getGameFlow().killFlow();
-        }
-    }
-
-    /**
      * Sets the size of the frame
      * containing this {@code Game}.
      * 
@@ -510,7 +286,6 @@ public abstract class Game implements GameFluid {
      * 
      * @see #onStart()
      */
-    @Override
     public void start() {
         
         onStart();
@@ -532,11 +307,7 @@ public abstract class Game implements GameFluid {
      * 
      * @see #onUpdate()
      */
-    @Override
     public void update() {
-        if(getCurrentStage() != null) {
-            getCurrentStage().update();
-        }
 
         onUpdate();
     }
@@ -562,11 +333,7 @@ public abstract class Game implements GameFluid {
      * @see #update()
      * @see #onDraw(Graphics2D)
      */
-    @Override
     public void draw(Graphics2D g2) {
-        if(getCurrentStage() != null) {
-            getCurrentStage().draw(g2);
-        }
 
         onDraw(g2);
     }
