@@ -5,6 +5,9 @@
 Test.java
 /test/
 
+# Diagram folder
+/diagrams/
+
 # Compiled class file
 *.class
 
