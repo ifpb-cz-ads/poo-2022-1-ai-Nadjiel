@@ -12,7 +12,7 @@ import imagine.flow.*;
  * 
  * @author Daniel O Sousa
  */
-public abstract class Game {
+public abstract class Game implements GameFluid {
 
     /**
      * The {@code GameFrame} where this game will be held.
@@ -397,6 +397,7 @@ public abstract class Game {
      * 
      * @see #onStart()
      */
+    @Override
     public void start() {
         
         onStart();
@@ -418,8 +419,9 @@ public abstract class Game {
      * 
      * @see #onUpdate()
      */
+    @Override
     public void update() {
-
+        
         onUpdate();
     }
     
@@ -444,8 +446,9 @@ public abstract class Game {
      * @see #update()
      * @see #onDraw(Graphics2D)
      */
+    @Override
     public void draw(Graphics2D g2) {
-
+        
         onDraw(g2);
     }
     
