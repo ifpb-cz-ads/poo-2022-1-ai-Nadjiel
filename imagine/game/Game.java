@@ -2,6 +2,8 @@ package imagine.game;
 
 import java.awt.Graphics2D;
 
+import imagine.flow.*;
+
 /**
  * Abstract class for creating a new game.
  * <p>
@@ -16,6 +18,11 @@ public abstract class Game {
      * The {@code GameFrame} where this game will be held.
      */
     private GameFrame gameFrame;
+
+    /**
+     * An object for controlling the flow of the game.
+     */
+    private GameFlow gameFlow;
 
     /**
      * Field which has the information of the default
@@ -43,6 +50,7 @@ public abstract class Game {
     public Game() {
         createGameFrame();
         setSize(1024, 576);
+        centralize();
     }
 
     /**
@@ -128,6 +136,97 @@ public abstract class Game {
     }
 
     /**
+     * Centralizes the game on the screen.
+     */
+    public void centralize() {
+        gameFrame.setLocationRelativeTo(null);
+    }
+
+    /**
+     * Causes a call to the
+     * {@code repaint} method of
+     * the {@code GamePanel}.
+     */
+    public void repaintGamePanel() {
+        getGamePanel().repaint();
+    }
+
+    /**
+     * Creates and starts a {@code GameFlow} to
+     * loop through the game.
+     * 
+     * @param fps the fps with which the game
+     * should iterate
+     */
+    public void createGameFlow(int fps) {
+        this.gameFlow = new GameFlow(this, fps);
+    }
+
+    /**
+     * Returns the {@code GameFlow} of this {@code Game}.
+     * 
+     * @return the {@code GameFlow}
+     */
+    public GameFlow getGameFlow() {
+        return this.gameFlow;
+    }
+
+    /**
+     * Returns the fps with which this
+     * {@code Game} is configured to run.
+     * {@code 0} is returned if no fps was
+     * configured.
+     * 
+     * @return the fps of this {@code Game}
+     */
+    public int getFps() {
+        if(gameFlow != null) {
+            return gameFlow.getFps();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Makes the flow of this {@code Game} finish.
+     */
+    public void killGameFlow() {
+        if(gameFlow != null) {
+            gameFlow.killFlow();
+        }
+    }
+
+    /**
+     * Sets if the fps should or shouldn't
+     * be displayed on the console.
+     * 
+     * @param displayFps boolean to
+     * configure the fps display
+     */
+    public void setDisplayFps(boolean displayFps) {
+        if(gameFlow != null) {
+            gameFlow.setDisplayFps(displayFps);
+        }
+    }
+
+    /**
+     * Returns {@code true} if the fps is configured
+     * to be displayed on the console and {@code false}
+     * otherwise. {@code false} is also returned
+     * if there is no {@code GameFlow} executing.
+     * 
+     * @return boolean indicating fps display
+     * state
+     */
+    public boolean getDisplayFps() {
+        if(gameFlow != null) {
+            return gameFlow.getDisplayFps();
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Sets the default width of the
      * tiles of this {@code Game}.
      * 
@@ -138,7 +237,10 @@ public abstract class Game {
      */
     private void setTileWidth(int tileWidth) {
         if(tileWidth < 0) {
-            throw new IllegalArgumentException("can't set tile width to " + tileWidth + ": " + tileWidth + " < 0");
+            throw new IllegalArgumentException (
+                "can't set tile width to " + tileWidth + ": " +
+                tileWidth + " < 0"
+            );
         }
 
         this.tileWidth = tileWidth;
@@ -155,7 +257,10 @@ public abstract class Game {
      */
     private void setTileHeight(int tileHeight) {
         if(tileHeight < 0) {
-            throw new IllegalArgumentException("can't set tile height to " + tileHeight + ": " + tileHeight + " < 0");
+            throw new IllegalArgumentException (
+                "can't set tile height to " + tileHeight + ": "
+                + tileHeight + " < 0"
+            );
         }
 
         this.tileHeight = tileHeight;
@@ -190,14 +295,17 @@ public abstract class Game {
      */
     public void setHorizontalTileAmount(int amount) {
         if(amount < 0) {
-            throw new IllegalArgumentException("can't have " + amount + " tiles horizontally onscreen: " + amount + " < 0");
-        }
-        if(amount == 0) {
-            setTileWidth(0);
-            return;
+            throw new IllegalArgumentException (
+                "can't have " + amount + " tiles horizontally onscreen: " +
+                amount + " < 0"
+            );
         }
 
-        setTileWidth(getGamePanelWidth() / amount);
+        setTileWidth (
+            amount == 0 ?
+            0 :
+            getGamePanelWidth() / amount
+        );
     }
 
     /**
@@ -213,14 +321,17 @@ public abstract class Game {
      */
     public void setVerticalTileAmount(int amount) {
         if(amount < 0) {
-            throw new IllegalArgumentException("can't have " + amount + " tiles vertically onscreen: " + amount + " < 0");
-        }
-        if(amount == 0) {
-            setTileHeight(0);
-            return;
+            throw new IllegalArgumentException (
+                "can't have " + amount + " tiles vertically onscreen: " +
+                amount + " < 0"
+            );
         }
 
-        setTileHeight(getGamePanelHeight() / amount);
+        setTileHeight (
+            amount == 0 ?
+            0 :
+            getGamePanelHeight() / amount
+        );
     }
 
     /**
