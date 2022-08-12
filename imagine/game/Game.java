@@ -3,6 +3,7 @@ package imagine.game;
 import java.awt.Graphics2D;
 
 import imagine.flow.*;
+import imagine.input.KeyHandler;
 
 /**
  * Abstract class for creating a new game.
@@ -18,6 +19,12 @@ public abstract class Game implements GameFluid {
      * The {@code GameFrame} where this game will be held.
      */
     private GameFrame gameFrame;
+
+    /**
+     * An object to help keeping track of
+     * the keys pressed by the player.
+     */
+    private KeyHandler keyHandler;
 
     /**
      * An object for controlling the flow of the game.
@@ -51,6 +58,7 @@ public abstract class Game implements GameFluid {
         createGameFrame();
         setSize(1024, 576);
         centralize();
+        createKeyHandler();
     }
 
     /**
@@ -149,6 +157,38 @@ public abstract class Game implements GameFluid {
      */
     public void repaintGamePanel() {
         getGamePanel().repaint();
+    }
+
+    /**
+     * Creates a {@code KeyHandler} instance
+     * to monitor the inputs from the keyboard.
+     */
+    private void createKeyHandler() {
+        this.keyHandler = new KeyHandler();
+        getGameFrame().addKeyListener(this.keyHandler);
+    }
+
+    /**
+     * Returns the {@code KeyHandler} that
+     * is monitoring the keyboard input.
+     * 
+     * @return the {@code KeyHandler}
+     */
+    public KeyHandler getKeyHandler() {
+        return this.keyHandler;
+    }
+
+    /**
+     * Verifies if a key specified by the passed
+     * {@code keyCode} is currently pressed.
+     * 
+     * @param keyCode the code of the key to verify
+     * 
+     * @return {@code true} or {@code false} depending
+     * on the key state
+     */
+    public boolean keyIsPressed(int keyCode) {
+        return getKeyHandler().isPressed(keyCode);
     }
 
     /**
