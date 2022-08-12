@@ -1,9 +1,11 @@
 package imagine.game;
 
+import java.util.ArrayList;
 import java.awt.Graphics2D;
 
 import imagine.flow.*;
 import imagine.input.KeyHandler;
+import imagine.stage.Stage;
 
 /**
  * Abstract class for creating a new game.
@@ -42,6 +44,16 @@ public abstract class Game implements GameFluid {
      * height of the tiles of this {@code Game}.
      */
     private int tileHeight;
+
+    /**
+     * Stores the stages of this {@code Game}.
+     */
+    private ArrayList<Stage> stages = new ArrayList<Stage>();
+
+    /**
+     * Stores the current stage of this {@code Game}.
+     */
+    private Stage currentStage;
 
     /**
      * Boolean value to configure if a tile
@@ -395,6 +407,333 @@ public abstract class Game implements GameFluid {
     }
 
     /**
+     * Sets the stages of this {@code Game}.
+     * If the passed argument is {@code null},
+     * does nothing.
+     * 
+     * @param stages the stages that this
+     * {@code Game} will have
+     */
+    public void setStages(ArrayList<Stage> stages) {
+        if(stages != null) {
+            this.stages = stages;
+        }
+    }
+
+    /**
+     * Adds the passed {@code stage} to
+     * the end of the list of stages if
+     * the argument is not {@code null}.
+     * 
+     * @param stage {@code Stage} to
+     * be added
+     * 
+     * @throws IllegalArgumentException if
+     * the {@code stage} argument is
+     * {@code null}
+     */
+    public void addStage(Stage stage) {
+        addLastStage(stage);
+    }
+
+    /**
+     * Adds the passed {@code stage} to
+     * the beginning of the list of stages if
+     * the argument is not {@code null}.
+     * 
+     * @param stage {@code Stage} to
+     * be added
+     * 
+     * @throws IllegalArgumentException if
+     * the {@code stage} argument is
+     * {@code null}
+     */
+    public void addFirstStage(Stage stage) {
+        if(stage == null) {
+            throw new IllegalArgumentException (
+                "cannot add null stage"
+            );
+        }
+
+        stages.add(0, stage);
+    }
+
+    /**
+     * Adds the passed {@code stage} to the
+     * specified {@code position} of the list
+     * of stages.
+     * <p>
+     * If the {@code stage} is null an exception
+     * will be thrown. Also if the {@code position}
+     * is invalid ({@code position < 0 || position
+     * > stages.size()}) an exception will
+     * be thrown.
+     * 
+     * @param position the position where to add
+     * the {@code stage}
+     * @param stage {@code Stage} to be added
+     * 
+     * @throws IndexOutOfBoundsException if the
+     * {@code position} argument is invalid
+     * @throws IllegalArgumentException if the
+     * {@code stage} argument is {@code null}
+     */
+    public void addNthStage(int position, Stage stage) {
+        if(position < 0 || position > stages.size()) {
+            throw new IndexOutOfBoundsException (
+                "cannot add stage at position " +
+                position
+            );
+        }
+        if(stage == null) {
+            throw new IllegalArgumentException (
+                "cannot add null stage"
+            );
+        }
+
+        stages.add(position, stage);
+    }
+
+    /**
+     * Adds the passed {@code stage} to
+     * the end of the list of stages if
+     * the argument is not {@code null}.
+     * 
+     * @param stage {@code Stage} to
+     * be added
+     * 
+     * @throws IllegalArgumentException if
+     * the {@code stage} argument is
+     * {@code null}
+     */
+    public void addLastStage(Stage stage) {
+        if(stage == null) {
+            throw new IllegalArgumentException (
+                "cannot add null stage"
+            );
+        }
+
+        stages.add(stage);
+    }
+
+    /**
+     * Removes all stages that are
+     * stored in this {@code Game}.
+     * After the removal the current
+     * stage will be unselected.
+     */
+    public void removeAllStages() {
+        stages.clear();
+        if(currentStage != null) {
+            unselectStage();
+        }
+    }
+
+    /**
+     * Removes the specified {@code stage}
+     * from the stages stored in this
+     * {@code Game} if it exists. If this
+     * removed stage is the current stage
+     * it is unselected.
+     * 
+     * @param stage the stage to be removed
+     */
+    public void removeStage(Stage stage) {
+        stages.remove(stage);
+        if(currentStage == stage) {
+            unselectStage();
+        }
+    }
+
+    /**
+     * Removes and returns the first stage
+     * from the stages stored in this
+     * {@code Game} if there are any. If this
+     * removed stage is the current stage
+     * it is unselected.
+     * 
+     * @return the removed {@code Stage}
+     */
+    public Stage removeFirstStage() {
+        if(stages.isEmpty()) {
+            return null;
+        }
+
+        Stage removedStage = stages.remove(0);
+        if(currentStage == removedStage) {
+            unselectStage();
+        }
+        return removedStage;
+    }
+
+    /**
+     * Removes and returns the stage at the
+     * specified {@code position} from the
+     * stages stored in this {@code Game} if
+     * there are any and the {@code position}
+     * is valid ({@code position > 0 && position
+     * < stages.size()}).
+     * <p>
+     * If the stage removed by this method is
+     * the current stage, it is unselected.
+     * 
+     * @param position the position where is
+     * the {@code Stage} to be removed
+     * 
+     * @return the removed {@code Stage}
+     * 
+     * @throws IndexOutOfBoundsException if the
+     * position is invalid
+     */
+    public Stage removeNthStage(int position) {
+        if(stages.isEmpty()) {
+            return null;
+        }
+        if(position < 0 || position >= stages.size()) {
+            throw new IndexOutOfBoundsException (
+                "position " + position +
+                " does not match a stage"
+            );
+        }
+
+        Stage removedStage = stages.remove(position);
+        if(currentStage == removedStage) {
+            unselectStage();
+        }
+        return removedStage;
+    }
+
+    /**
+     * Removes and returns the last stage
+     * from the stages stored in this
+     * {@code Game} if there are any. If
+     * this removed stage is the current
+     * stage it is unselected.
+     * 
+     * @return the removed {@code Stage}
+     */
+    public Stage removeLastStage() {
+        if(stages.isEmpty()) {
+            return null;
+        }
+
+        Stage removedStage = stages.remove(stages.size() - 1);
+        if(currentStage == removedStage) {
+            unselectStage();
+        }
+        return removedStage;
+    }
+
+    /**
+     * Returns an {@code ArrayList} with
+     * the stages of this {@code Game}.
+     * 
+     * @return the stages of this {@code Game}
+     */
+    public ArrayList<Stage> getStages() {
+        return this.stages;
+    }
+
+    /**
+     * Selects and starts the stage specified
+     * by the passed {@code position}.
+     * If there are no stages added to this
+     * {@code Game}, however, does nothing.
+     * <p>
+     * If the passed argument does not correspond
+     * to a stage (is negative or greater or equal 
+     * to the amount of added stages), throws
+     * an {@code IndexOutOfBoundsException}.
+     * 
+     * @param position a position specifiyng
+     * the stage to select
+     * 
+     * @throws IndexOutOfBoundsException if the argument
+     * doesn't correspond to a stage
+     */
+    public void selectStage(int position) {
+        if(stages.isEmpty()) {
+            return;
+        }
+        if(position < 0 || position >= stages.size()) {
+            throw new IndexOutOfBoundsException (
+                "position " + position +
+                " does not correspond to a stage"
+            );
+        }
+
+        Stage currentStage = stages.get(position);
+        currentStage.start();
+        this.currentStage = currentStage;
+    }
+
+    /**
+     * Unselects whatever stage
+     * is currently selected.
+     */
+    public void unselectStage() {
+        this.currentStage = null;
+    }
+
+    /**
+     * Selects and starts the next stage from
+     * the stages of this {@code Game}. If the
+     * current stage is {@code null}, the first
+     * stage will be selected.
+     * <p>
+     * If there are no stages to select, this
+     * method won't do anything.
+     */
+    public void nextStage() {
+        if(stages.isEmpty()) {
+            return;
+        }
+        if(currentStage == stages.get(stages.size() - 1)) {
+            return;
+        }
+        if(currentStage == null) {
+            selectStage(0);
+            return;
+        }
+        
+        selectStage(stages.indexOf(currentStage) + 1);
+    }
+
+    /**
+     * Selects and starts the previous stage from
+     * the stages of this {@code Game}. If the
+     * current stage is {@code null}, the last
+     * stage will be selected.
+     * <p>
+     * If there are no stages to select, this
+     * method won't do anything.
+     */
+    public void previousStage() {
+        if(stages.isEmpty()) {
+            return;
+        }
+        if(currentStage == stages.get(0)) {
+            return;
+        }
+        if(currentStage == null) {
+            selectStage(stages.size() - 1);
+            return;
+        }
+        
+        selectStage(stages.indexOf(currentStage) - 1);
+    }
+
+    /**
+     * Returns the stage which is
+     * currently selected.
+     * 
+     * @return the current stage
+     */
+    public Stage getCurrentStage() {
+        return this.currentStage;
+    }
+
+    /**
      * Specifies if a tile grid should be drawn.
      * This grid is usually good for debugging.
      * 
@@ -461,7 +800,10 @@ public abstract class Game implements GameFluid {
      */
     @Override
     public void update() {
-        
+        if(currentStage != null) {
+            currentStage.update();
+        }
+
         onUpdate();
     }
     
@@ -488,7 +830,10 @@ public abstract class Game implements GameFluid {
      */
     @Override
     public void draw(Graphics2D g2) {
-        
+        if(currentStage != null) {
+            currentStage.draw(g2);
+        }
+
         onDraw(g2);
     }
     

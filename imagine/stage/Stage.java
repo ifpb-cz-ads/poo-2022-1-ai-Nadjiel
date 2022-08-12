@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 
 import imagine.flow.GameFluid;
 import imagine.game.Game;
+import imagine.scenario.Scenario;
 import imagine.object.GameObject;
 import imagine.camera.*;
 import imagine.camera.type.CameraType;
@@ -37,9 +38,19 @@ public abstract class Stage implements GameFluid {
     private int height;
 
     /**
+     * The backgrounds of this {@code Stage}.
+     */
+    private ArrayList<Scenario> backgrounds = new ArrayList<Scenario>();
+
+    /**
      * The objects of this {@code Stage}.
      */
     private ArrayList<GameObject> objects = new ArrayList<GameObject>();
+
+    /**
+     * The foregrounds of this {@code Stage}.
+     */
+    private ArrayList<Scenario> foregrounds = new ArrayList<Scenario>();
 
     /**
      * The camera of this {@code Stage}.
@@ -203,6 +214,213 @@ public abstract class Stage implements GameFluid {
     public void setSize(int width, int height) {
         setWidth(width);
         setHeight(height);
+    }
+
+    /**
+     * Adds a background to this {@code Stage}. This
+     * background will be the furthest from the camera.
+     * If the {@code background} argument is {@code null},
+     * though, it won't be added.
+     * 
+     * @param background the background to be added
+     * 
+     * @throws IllegalArgumentException if the {@code background}
+     * argument is {@code null}
+     */
+    public void addBackground(Scenario background) {
+        addFurthestBackground(background);
+    }
+
+    /**
+     * Adds a background to this {@code Stage}. This
+     * background will be the furthest from the camera.
+     * If the {@code background} argument is {@code null},
+     * though, it won't be added.
+     * 
+     * @param background the background to be added
+     * 
+     * @throws IllegalArgumentException if the {@code background}
+     * argument is {@code null}
+     */
+    public void addFurthestBackground(Scenario background) {
+        if(background == null) {
+            throw new IllegalArgumentException (
+                "cannot add null background"
+            );
+        }
+
+        background.setStage(this);
+        backgrounds.add(background);
+    }
+
+    /**
+     * Adds a background to this {@code Stage} at
+     * the specified {@code position}. The position
+     * means how far between the backgrounds this one
+     * will be from the camera. It must be a value
+     * between {@code 0} and the amount of backgrounds
+     * already in this {@code Stage}.
+     * 
+     * @param position the position where to add this background
+     * @param background the background to be added
+     * 
+     * @throws IndexOutOfBoundsException if the {@code position}
+     * argument is less than {@code 0} or greater than the
+     * amount of backgrounds already added to this {@code Stage}
+     * @throws IllegalArgumentException if the {@code background}
+     * argument is {@code null}
+     */
+    public void addNthBackground(int position, Scenario background) {
+        if(position < 0 || position > backgrounds.size()) {
+            throw new IndexOutOfBoundsException (
+                "cannot add background to position " + position +
+                " (backgrounds amount is: " + backgrounds.size() + ")"
+            );
+        }
+        if(background == null) {
+            throw new IllegalArgumentException (
+                "cannot add null background"
+            );
+        }
+
+        background.setStage(this);
+        backgrounds.add(position, background);
+    }
+
+    /**
+     * Adds a background to this {@code Stage}. This
+     * background will be the closest to the camera.
+     * If it is {@code null}, though, it won't be added.
+     * 
+     * @param background the background to be added
+     * 
+     * @throws IllegalArgumentException if the {@code background}
+     * argument is {@code null}
+     */
+    public void addClosestBackground(Scenario background) {
+        if(background == null) {
+            throw new IllegalArgumentException (
+                "cannot add null background"
+            );
+        }
+
+        background.setStage(this);
+        backgrounds.add(0, background);
+    }
+
+    /**
+     * Removes the furthest background of this
+     * {@code Stage}. If it already has no backgrounds
+     * this method won't do anything.
+     * 
+     * @return the removed background or {@code null}
+     * if no background is removed
+     */
+    public Scenario removeFurthestBackground() {
+        if(backgrounds.isEmpty()) {
+            return null;
+        }
+
+        Scenario removedBackground = backgrounds.remove(backgrounds.size() - 1);
+        removedBackground.setStage(null);
+        return removedBackground;
+    }
+
+    /**
+     * Removes the background at the specified position.
+     * The position means how far the background is from the
+     * camera. It must be between {@code 0} and the amount
+     * of backgrounds already in this {@code Stage} minus {@code 1}.
+     * If this {@code Stage} has no backgrounds nothing will
+     * happen.
+     * 
+     * @param position the position where to remove a background from
+     * 
+     * @return the removed background or {@code null} if no
+     * background is removed
+     * 
+     * @throws IndexOutOfBoundsException if the {@code position}
+     * argument is less than {@code 0} or greater or equal to the
+     * amount of backgrounds in this {@code Stage}
+     */
+    public Scenario removeBackground(int position) {
+        if(backgrounds.isEmpty()) {
+            return null;
+        }
+        if(position < 0 || position >= backgrounds.size()) {
+            throw new IndexOutOfBoundsException (
+                "position " + position +
+                " does not correspond to any backgrounds"
+            );
+        }
+
+        Scenario removedBackground = backgrounds.remove(position);
+        removedBackground.setStage(null);
+        return removedBackground;
+    }
+
+    /**
+     * Removes the passed {@code background} from
+     * this {@code Stage}'s backgrounds, if it is present.
+     * 
+     * @param background the background to be removed
+     */
+    public void removeBackground(Scenario background) {
+        if(backgrounds.remove(background)) {
+            background.setStage(null);
+        }
+    }
+
+    /**
+     * Removes the closest background of this
+     * {@code Stage}. If it already has no
+     * backgrounds this method won't do anything.
+     * 
+     * @return the removed background or {@code null}
+     * if no background is removed
+     */
+    public Scenario removeClosestBackground() {
+        if(backgrounds.isEmpty()) {
+            return null;
+        }
+
+        Scenario removedBackground = backgrounds.remove(0);
+        removedBackground.setStage(null);
+        return removedBackground;
+    }
+
+    /**
+     * Returns this {@code Stage}'s backgrounds.
+     * 
+     * @return the backgrounds of this {@code Stage}
+     */
+    public ArrayList<Scenario> getBackgrounds() {
+        return backgrounds;
+    }
+
+    /**
+     * Returns the background specified by the
+     * {@code position} argument. This argument
+     * means how far the background is from the
+     * camera. It must be a number between {@code 0}
+     * and the amount of backgrounds in this
+     * {@code Stage} minus {@code 1}.
+     * <p>
+     * If the {@code position} does not correspond to
+     * any backgrounds {@code null} will be returned.
+     * 
+     * @param position the position of the
+     * background to get
+     * 
+     * @return the background specified by the
+     * {@code position} argument
+     */
+    public Scenario getBackground(int position) {
+        if(position < 0 || position >= backgrounds.size()) {
+            return null;
+        }
+
+        return backgrounds.get(position);
     }
 
     /**
@@ -421,6 +639,213 @@ public abstract class Stage implements GameFluid {
     }
 
     /**
+     * Adds a foreground to this {@code Stage}. This
+     * foreground will be the furthest from the camera.
+     * If the {@code foreground} argument is {@code null},
+     * though, it won't be added.
+     * 
+     * @param foreground the foreground to be added
+     * 
+     * @throws IllegalArgumentException if the {@code foreground}
+     * argument is {@code null}
+     */
+    public void addForeground(Scenario foreground) {
+        addFurthestForeground(foreground);
+    }
+
+    /**
+     * Adds a foreground to this {@code Stage}. This
+     * foreground will be the furthest from the camera.
+     * If the {@code foreground} argument is {@code null},
+     * though, it won't be added.
+     * 
+     * @param foreground the foreground to be added
+     * 
+     * @throws IllegalArgumentException if the {@code foreground}
+     * argument is {@code null}
+     */
+    public void addFurthestForeground(Scenario foreground) {
+        if(foreground == null) {
+            throw new IllegalArgumentException (
+                "cannot add null foreground"
+            );
+        }
+
+        foreground.setStage(this);
+        foregrounds.add(foreground);
+    }
+
+    /**
+     * Adds a foreground to this {@code Stage} at
+     * the specified {@code position}. The position
+     * means how far between the foregrounds this one
+     * will be from the camera. It must be a value
+     * between {@code 0} and the amount of foregrounds
+     * already in this {@code Stage}.
+     * 
+     * @param position the position where to add this foreground
+     * @param foreground the foreground to be added
+     * 
+     * @throws IndexOutOfBoundsException if the {@code position}
+     * argument is less than {@code 0} or greater than the
+     * amount of foregrounds already added to this {@code Stage}
+     * @throws IllegalArgumentException if the {@code foreground}
+     * argument is {@code null}
+     */
+    public void addNthForeground(int position, Scenario foreground) {
+        if(position < 0 || position > foregrounds.size()) {
+            throw new IndexOutOfBoundsException (
+                "cannot add foreground to position " + position +
+                " (foregrounds amount is " + foregrounds.size() + ")"
+            );
+        }
+        if(foreground == null) {
+            throw new IllegalArgumentException (
+                "cannot add null foreground"
+            );
+        }
+
+        foreground.setStage(this);
+        foregrounds.add(position, foreground);
+    }
+
+    /**
+     * Adds a foreground to this {@code Stage}. This
+     * foreground will be the closest to the camera.
+     * If it is {@code null}, though, it won't be added.
+     * 
+     * @param foreground the foreground to be added
+     * 
+     * @throws IllegalArgumentException if the {@code foreground}
+     * argument is {@code null}
+     */
+    public void addClosestForeground(Scenario foreground) {
+        if(foreground == null) {
+            throw new IllegalArgumentException (
+                "cannot add null foreground"
+            );
+        }
+
+        foreground.setStage(this);
+        foregrounds.add(0, foreground);
+    }
+
+    /**
+     * Removes the furthest foreground of this
+     * {@code Stage}. If it already has no foregrounds
+     * this method won't do anything.
+     * 
+     * @return the removed foreground or {@code null}
+     * if no foreground is removed
+     */
+    public Scenario removeFurthestForeground() {
+        if(foregrounds.isEmpty()) {
+            return null;
+        }
+
+        Scenario removedForeground = foregrounds.remove(foregrounds.size() - 1);
+        removedForeground.setStage(null);
+        return removedForeground;
+    }
+
+    /**
+     * Removes the foreground at the specified position.
+     * The position means how far the foreground is from the
+     * camera. It must be between {@code 0} and the amount
+     * of foregrounds already in this {@code Stage} minus {@code 1}.
+     * If this {@code Stage} has no foregrounds nothing will
+     * happen.
+     * 
+     * @param position the position where to remove a foreground from
+     * 
+     * @return the removed foreground or {@code null} if no
+     * foreground is removed
+     * 
+     * @throws IndexOutOfBoundsException if the {@code position}
+     * argument is less than {@code 0} or greater or equal to the
+     * amount of foregrounds in this {@code Stage}
+     */
+    public Scenario removeForeground(int position) {
+        if(foregrounds.isEmpty()) {
+            return null;
+        }
+        if(position < 0 || position >= foregrounds.size()) {
+            throw new IndexOutOfBoundsException (
+                "position " + position +
+                " does not correspond to any foregrounds"
+            );
+        }
+
+        Scenario removedForeground = foregrounds.remove(position);
+        removedForeground.setStage(null);
+        return removedForeground;
+    }
+
+    /**
+     * Removes the passed {@code foreground} from
+     * this {@code Stage}'s foregrounds, if it is present.
+     * 
+     * @param foreground the foreground to be removed
+     */
+    public void removeForeground(Scenario foreground) {
+        if(foregrounds.remove(foreground)) {
+            foreground.setStage(null);
+        }
+    }
+
+    /**
+     * Removes the closest foreground of this
+     * {@code Stage}. If it already has no
+     * foregrounds this method won't do anything.
+     * 
+     * @return the removed foreground or {@code null}
+     * if no foreground is removed
+     */
+    public Scenario removeClosestForeground() {
+        if(foregrounds.isEmpty()) {
+            return null;
+        }
+
+        Scenario removedForeground = foregrounds.remove(0);
+        removedForeground.setStage(null);
+        return removedForeground;
+    }
+
+    /**
+     * Returns this {@code Stage}'s foregrounds.
+     * 
+     * @return the foregrounds of this {@code Stage}
+     */
+    public ArrayList<Scenario> getForegrounds() {
+        return foregrounds;
+    }
+
+    /**
+     * Returns the foreground specified by the
+     * {@code position} argument. This argument
+     * means how far the foreground is from the
+     * camera. It must be a number between {@code 0}
+     * and the amount of foregrounds in this
+     * {@code Stage} minus {@code 1}.
+     * <p>
+     * If the {@code position} does not correspond to
+     * any foregrounds {@code null} will be returned.
+     * 
+     * @param position the position of the
+     * foreground to get
+     * 
+     * @return the foreground specified by the
+     * {@code position} argument
+     */
+    public Scenario getForeground(int position) {
+        if(position < 0 || position >= foregrounds.size()) {
+            return null;
+        }
+
+        return foregrounds.get(position);
+    }
+
+    /**
      * Creates a {@code Camera} for
      * this {@code Stage}.
      */
@@ -556,6 +981,42 @@ public abstract class Stage implements GameFluid {
     }
 
     /**
+     * Starts every background of this
+     * {@code Stage} from the furthest to
+     * the closest to the camera.
+     */
+    private void startBackgrounds() {
+        for(int i = backgrounds.size() - 1; i >= 0; i--) {
+            backgrounds.get(i).start();
+        }
+    }
+
+    /**
+     * Updates every background of this
+     * {@code Stage} from the furthest to
+     * the closest to the camera.
+     */
+    private void updateBackgrounds() {
+        for(int i = backgrounds.size() - 1; i >= 0; i--) {
+            backgrounds.get(i).update();
+        }
+    }
+
+    /**
+     * Draws every background of this
+     * {@code Stage} from the furthest to
+     * the closest to the camera.
+     * 
+     * @param g2 a {@code Graphics2D} with
+     * which the backgrounds are drawn
+     */
+    private void drawBackgrounds(Graphics2D g2) {
+        for(int i = backgrounds.size() - 1; i >= 0; i--) {
+            backgrounds.get(i).draw(g2);
+        }
+    }
+
+    /**
      * Starts every object of this
      * {@code Stage}.
      */
@@ -587,7 +1048,43 @@ public abstract class Stage implements GameFluid {
             object.draw(g2);
         }
     }
-    
+
+    /**
+     * Starts every foreground of this
+     * {@code Stage} from the furthest to
+     * the closest to the camera.
+     */
+    private void startForegrounds() {
+        for(int i = foregrounds.size() - 1; i >= 0; i--) {
+            foregrounds.get(i).start();
+        }
+    }
+
+    /**
+     * Updates every foreground of this
+     * {@code Stage} from the furthest to
+     * the closest to the camera.
+     */
+    private void updateForegrounds() {
+        for(int i = foregrounds.size() - 1; i >= 0; i--) {
+            foregrounds.get(i).update();
+        }
+    }
+
+    /**
+     * Draws every foreground of this
+     * {@code Stage} from the furthest to
+     * the closest to the camera.
+     * 
+     * @param g2 a {@code Graphics2D} with
+     * which the foregrounds are drawn
+     */
+    private void drawForegrounds(Graphics2D g2) {
+        for(int i = foregrounds.size() - 1; i >= 0; i--) {
+            foregrounds.get(i).draw(g2);
+        }
+    }
+
     /**
      * Starts the camera of this
      * {@code Stage}.
@@ -626,7 +1123,9 @@ public abstract class Stage implements GameFluid {
      * @see #onStart()
      */
     public void start() {
+        startBackgrounds();
         startObjects();
+        startForegrounds();
         startCamera();
 
         onStart();
@@ -653,7 +1152,9 @@ public abstract class Stage implements GameFluid {
      * @see #onUpdate()
      */
     public void update() {
+        updateBackgrounds();
         updateObjects();
+        updateForegrounds();
         updateCamera();
 
         onUpdate();
@@ -683,7 +1184,9 @@ public abstract class Stage implements GameFluid {
      * @see #onDraw(Graphics2D)
      */
     public void draw(Graphics2D g2) {
+        drawBackgrounds(g2);
         drawObjects(g2);
+        drawForegrounds(g2);
         drawCamera(g2);
         
         onDraw(g2);
