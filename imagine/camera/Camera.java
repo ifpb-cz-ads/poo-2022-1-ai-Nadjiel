@@ -6,6 +6,7 @@ import imagine.stage.StageElement;
 import imagine.stage.Stage;
 import imagine.flow.GameFluid;
 import imagine.camera.type.*;
+import imagine.object.GameObject;
 
 /**
  * Class that represents the view of a {@code Stage}.
@@ -114,6 +115,23 @@ public class Camera extends StageElement implements GameFluid {
      */
     public void setTypeAutoScroll() {
         setType(new AutoScroll(this));
+    }
+
+    /**
+     * Sets the type of this {@code Camera}
+     * to the {@code Follow} {@code CameraType}
+     * making the {@code target} argument be
+     * the target followed by the {@code Camera}.
+     * <p>
+     * If the passed {@code target} is {@code null},
+     * this {@code Camera}'s type will be automatically
+     * converted to {@code Static}.
+     * 
+     * @param target the target that the
+     * {@code Camera} will follow
+     */
+    public void setTypeFollow(GameObject target) {
+        setType(new Follow(this, target));
     }
 
     /**
