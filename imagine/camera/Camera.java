@@ -4,7 +4,6 @@ import java.awt.Graphics2D;
 
 import imagine.stage.StageElement;
 import imagine.stage.Stage;
-import imagine.flow.GameFluid;
 import imagine.camera.type.*;
 import imagine.object.GameObject;
 
@@ -13,7 +12,7 @@ import imagine.object.GameObject;
  * 
  * @author Daniel O Sousa
  */
-public class Camera extends StageElement implements GameFluid {
+public class Camera extends StageElement {
 
     /**
      * Represents the type of

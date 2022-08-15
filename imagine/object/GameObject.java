@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import imagine.stage.AnimatableStageElement;
-import imagine.flow.GameFluid;
 import imagine.sprite.SpriteSheet;
 
 /**
@@ -12,7 +11,7 @@ import imagine.sprite.SpriteSheet;
  * 
  * @author Daniel O Sousa
  */
-public abstract class GameObject extends AnimatableStageElement implements GameFluid {
+public abstract class GameObject extends AnimatableStageElement {
 
     /**
      * The color with which this {@code GameObject}

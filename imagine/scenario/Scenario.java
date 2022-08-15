@@ -3,7 +3,6 @@ package imagine.scenario;
 import java.awt.Graphics2D;
 
 import imagine.stage.AnimatableStageElement;
-import imagine.flow.GameFluid;
 import imagine.scenario.type.*;
 import imagine.sprite.SpriteSheet;
 
@@ -13,7 +12,7 @@ import imagine.sprite.SpriteSheet;
  * 
  * @author Daniel O Sousa
  */
-public abstract class Scenario extends AnimatableStageElement implements GameFluid {
+public abstract class Scenario extends AnimatableStageElement {
 
     /**
      * The speed with which the scenario will

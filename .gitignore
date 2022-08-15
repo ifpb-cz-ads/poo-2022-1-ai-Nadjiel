@@ -1,12 +1,6 @@
 # Extra folder
 /extra/
 
-# Diagram folder
-/diagrams/
-
-# Compiled classes folder
-/bin/
-
 # Compiled class file
 *.class
 

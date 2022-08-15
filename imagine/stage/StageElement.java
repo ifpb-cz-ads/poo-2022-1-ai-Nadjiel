@@ -1,7 +1,8 @@
 package imagine.stage;
 
-import imagine.game.Game;
 import imagine.game.GameElement;
+import imagine.flow.GameFluid;
+import imagine.game.Game;
 
 /**
  * Super class for stage elements like
@@ -9,7 +10,7 @@ import imagine.game.GameElement;
  * 
  * @author Daniel O Sousa
  */
-public abstract class StageElement extends GameElement {
+public abstract class StageElement extends GameElement implements GameFluid {
 
     /**
      * The stage where this
