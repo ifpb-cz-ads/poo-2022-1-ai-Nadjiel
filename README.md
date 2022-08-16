@@ -65,3 +65,9 @@ Todos os assuntos estudados no decorrer das etapas do projeto tiveram suas aplic
 - **Classes abstratas** tem seu uso exemplificado pelas classes [`GameElement`](https://github.com/ifpb-cz-ads/poo-2022-1-ai-Nadjiel/blob/main/imagine/game/GameElement.java), [`StageElement`](https://github.com/ifpb-cz-ads/poo-2022-1-ai-Nadjiel/blob/main/imagine/stage/StageElement.java) e [`AnimatableStageElement`](https://github.com/ifpb-cz-ads/poo-2022-1-ai-Nadjiel/blob/main/imagine/stage/AnimatableStageElement.java), como dito anteriormente. Essas classes são a base dos demais elementos dos jogos feitos com essa engine.
 
 - As **Interfaces** estão presentes na forma das classes [`GameFluid`](https://github.com/ifpb-cz-ads/poo-2022-1-ai-Nadjiel/blob/main/imagine/flow/GameFluid.java), [`ScenarioType`](https://github.com/ifpb-cz-ads/poo-2022-1-ai-Nadjiel/blob/main/imagine/scenario/type/ScenarioType.java) e [`CameraType`](https://github.com/ifpb-cz-ads/poo-2022-1-ai-Nadjiel/blob/main/imagine/camera/type/CameraType.java) que são implementadas por outras diferentes classes.
+
+## Protozelda em execução
+
+A seguir está um vídeo mostrando o Protozelda sendo executado:
+
+https://user-images.githubusercontent.com/91296669/184987020-671bdabf-0477-4668-a78c-5b89c09f295e.mp4
